@@ -64,12 +64,27 @@ remote func receive_server_time(server_time, client_time):
 # Client
 
 
-# Fetch client data from the server.
-func load_client_data(world: String)->void:
-	rpc_id(1, "load_client_data", world)
+## Fetch client data from the server.
+#func load_client_data(world: String)->void:
+#	rpc_id(1, "load_client_data", world)
 
 
-# Receive client data from server.
-remote func receive_client_data(data: Dictionary)->void:
+## Receive client data from server.
+#remote func receive_client_data(data: Dictionary)->void:
+#	security_check()
+##	_Client.receive_client_data(data)
+
+
+########################################################
+# World
+
+
+# Load initial world data from the server.
+func load_world_data(world : String = "default")->void:
+	rpc_id(1, "load_world_data", world)
+
+
+# Receive the initial world data from the server.
+remote func receive_world_data(world_data : Dictionary)->void:
 	security_check()
-#	_Client.receive_client_data(data)
+	_Client._receive_world_data(world_data)

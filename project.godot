@@ -8,6 +8,82 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node",
+"class": "Builder2D",
+"language": "GDScript",
+"path": "res://src/Static/Builder2D.gd"
+}, {
+"base": "Reference",
+"class": "DTS",
+"language": "GDScript",
+"path": "res://addons/dialogic/Localization/translation_service.gd"
+}, {
+"base": "Node",
+"class": "Dialogic",
+"language": "GDScript",
+"path": "res://addons/dialogic/Other/DialogicClass.gd"
+}, {
+"base": "Control",
+"class": "DialogicBackgroundMusic",
+"language": "GDScript",
+"path": "res://addons/dialogic/Nodes/BackgroundMusic.gd"
+}, {
+"base": "Node",
+"class": "DialogicDefinitionsUtil",
+"language": "GDScript",
+"path": "res://addons/dialogic/Other/DialogicDefinitionsUtil.gd"
+}, {
+"base": "Reference",
+"class": "DialogicResources",
+"language": "GDScript",
+"path": "res://addons/dialogic/Other/DialogicResources.gd"
+}, {
+"base": "Reference",
+"class": "DialogicUtil",
+"language": "GDScript",
+"path": "res://addons/dialogic/Other/DialogicUtil.gd"
+}, {
+"base": "Node",
+"class": "Helper",
+"language": "GDScript",
+"path": "res://src/Static/Helper.gd"
+}, {
+"base": "Node2D",
+"class": "ObjectsContainer2D",
+"language": "GDScript",
+"path": "res://src/Classes/ObjectsContainer2D.gd"
+}, {
+"base": "Node2D",
+"class": "OpenPixelverseWorld2D",
+"language": "GDScript",
+"path": "res://src/Classes/OpenPixelverseWorld2D.gd"
+}, {
+"base": "Area2D",
+"class": "SelectableArea2D",
+"language": "GDScript",
+"path": "res://src/Classes/SelectableArea2D.gd"
+}, {
+"base": "StaticBody2D",
+"class": "StaticObject2D",
+"language": "GDScript",
+"path": "res://src/Classes/StaticObject2D.gd"
+} ]
+_global_script_class_icons={
+"Builder2D": "",
+"DTS": "",
+"Dialogic": "",
+"DialogicBackgroundMusic": "",
+"DialogicDefinitionsUtil": "",
+"DialogicResources": "",
+"DialogicUtil": "",
+"Helper": "",
+"ObjectsContainer2D": "",
+"OpenPixelverseWorld2D": "",
+"SelectableArea2D": "",
+"StaticObject2D": ""
+}
+
 [application]
 
 config/name="Open Pixelverse Client"
@@ -19,6 +95,10 @@ config/icon="res://icon.png"
 Config="*res://src/Singletons/Config.gd"
 Router="*res://src/Singletons/Router.gd"
 Clock="*res://src/Singletons/Clock.gd"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/dialogic/plugin.cfg" )
 
 [importer_defaults]
 
@@ -42,6 +122,14 @@ texture={
 "size_limit": 0,
 "stream": false,
 "svg/scale": 1.0
+}
+
+[input]
+
+select={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
+ ]
 }
 
 [physics]
