@@ -88,3 +88,9 @@ func load_world_data(world : String = "default")->void:
 remote func receive_world_data(world_data : Dictionary)->void:
 	security_check()
 	_Client._receive_world_data(world_data)
+
+
+# Receive the world state from the server.
+remote func receive_world_state(world_state : Dictionary)->void:
+	security_check()
+	_Client._receive_world_state(world_state)

@@ -2,6 +2,14 @@ extends Node
 
 
 ########################################################
+# Variables                                            #
+########################################################
+
+
+var _World
+
+
+########################################################
 # Signals                                              #
 ########################################################
 
@@ -38,6 +46,14 @@ func _receive_world_data(world_data : Dictionary)->void:
 	setup_world(world_data)
 
 
+# Receive the world state from the server.
+func _receive_world_state(world_state : Dictionary)->void:
+	# Only pass down the world state if the world has been 
+	#  initialized already.
+	if _World:
+		_World._receive_world_state(world_state)
+
+
 ########################################################
 # Setup                                                #
 ########################################################
@@ -47,9 +63,6 @@ func _receive_world_data(world_data : Dictionary)->void:
 func setup_world(world_data : Dictionary)->void:
 	# Validate type.
 	assert(world_data.has("type"), "[Client] No type in world data.")
-	
-	# Create container variable for world node.
-	var _World
 	
 	# Match the type.
 	match world_data.type:
