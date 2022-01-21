@@ -3,11 +3,11 @@ class_name ObjectsContainer2D
 
 
 ########################################################
-# Hooks                                                #
+# Variables                                            #
 ########################################################
 
 
-var _StaticObjectsContainer : YSort
+var available_containers : Dictionary
 
 
 ########################################################
@@ -51,12 +51,50 @@ func add_static_object(object: Dictionary)->void:
 	assert(object.has("type") and object.type == "static", "[ObjectsContainer2D] Object type provided is not 'static'.")
 	
 	var _Object = StaticObject2D.new(object)
+	var _StaticObjectsContainer
 	
-	if _StaticObjectsContainer:
+	if has_node("StaticObjects"):
 		_StaticObjectsContainer = get_node("StaticObjects")
 	else:
-		_StaticObjectsContainer = YSort.new()
-		_StaticObjectsContainer.name = "StaticObjects"
+		_StaticObjectsContainer = create_container("static")
 		add_child(_StaticObjectsContainer)
 	
 	_StaticObjectsContainer.add_child(_Object)
+	
+	available_containers["static"] = _StaticObjectsContainer
+
+
+func create_container(type : String):
+	var _Container
+	
+	match type:
+		"static":
+			_Container = StaticObjectsContainer2D.new()
+			_Container.name = "StaticObjects"
+		_:
+			assert(false, "[ObjectsContainer2D] Contianer type '" + str(type) + "' not implemented yet.")
+	
+	return _Container
+
+
+########################################################
+# World State Buffer                                   #
+########################################################
+
+
+func interpolate_elements(interpolation_factor : float, world_state_buffer : Array)->void:
+	for element in world_state_buffer[2]["objects"]:
+		if not available_containers.has(element):
+			var _StaticObjectsContainer = create_container(element)
+			add_child(_StaticObjectsContainer)
+			available_containers[element] = _StaticObjectsContainer
+		available_containers[element].interpolate_elements(interpolation_factor, world_state_buffer)
+
+
+func extrapolate_elements(extrapolation_factor : float, world_state_buffer : Dictionary)->void:
+	for element in world_state_buffer[2]["objects"]:
+		if not available_containers.has(element):
+			var _StaticObjectsContainer = create_container(element)
+			add_child(_StaticObjectsContainer)
+			available_containers[element] = _StaticObjectsContainer
+		available_containers[element].extrapolate_elements(extrapolation_factor, world_state_buffer)
