@@ -38,6 +38,11 @@ func _physics_process(delta)->void:
 func _receive_world_state(world_state : Dictionary)->void:
 	update_world_state(world_state)
 
+
+func _receive_subject_data(type : String, name, data : Dictionary)->void:
+	if _SubjectsContainer:
+		_SubjectsContainer._receive_subject_data(type, name, data)
+
 ########################################################
 # Setup                                                #
 ########################################################
@@ -59,6 +64,7 @@ func setup_environment(data: Dictionary)->void:
 		var _Environment = Builder2D.build_environment(data.environment)
 		var _WorldEnvironment = WorldEnvironment.new()
 		_WorldEnvironment.set_environment(_Environment)
+		_WorldEnvironment.name = "WorldEnvironment"
 		add_child(_WorldEnvironment)
 		move_child(_WorldEnvironment, 0)
 

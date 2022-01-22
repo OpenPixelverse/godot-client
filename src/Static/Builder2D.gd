@@ -232,3 +232,79 @@ static func add_action_to_dialogic_timeline(action: String, timeline: Dictionary
 				"emit_signal": str(action),
 				"event_id": "dialogic_040"
 			})
+
+
+# Build animation.
+static func build_animation(length: float, keys: Array, loop: bool = true, type: int = Animation.TYPE_VALUE)->Animation:
+	# Create animation instance.
+	var _Animation = Animation.new()
+	# Setup the track.
+	var track_index = _Animation.add_track(type)
+	_Animation.set_length(length)
+	_Animation.set_loop(loop)
+	_Animation.track_set_path(track_index, "Sprite:frame")
+	_Animation.value_track_set_update_mode(track_index, Animation.UPDATE_DISCRETE)
+	# Add keys to animation track.
+	for key in keys:
+		_Animation.track_insert_key(track_index, key.position, key.frame)
+	return _Animation
+
+
+# Build animation player.
+static func build_animation_player(data: Dictionary)->AnimationPlayer:
+	# Create AnimationPlayer node instance.
+	var _AnimationPlayer = AnimationPlayer.new()
+	_AnimationPlayer.name = "AnimationPlayer"
+	# Create animations.
+	for animation_index in data.keys():
+		var animation = data[animation_index]
+		var _Animation = build_animation(animation.length, animation.keys)
+		_AnimationPlayer.add_animation(animation_index, _Animation)
+	return _AnimationPlayer
+
+
+# Build animation tree.
+static func build_animation_tree(data: Dictionary, animation_player_path: String)->AnimationTree:
+	# Create the AnimationTree node, setup the state machine and attach
+	#  the AnimationPlayer.
+	var _AnimationTree = AnimationTree.new()
+	_AnimationTree.name = "AnimationTree"
+	_AnimationTree.active = true
+	var _AnimationState = AnimationNodeStateMachine.new()
+	_AnimationTree.tree_root = _AnimationState
+	_AnimationTree.anim_player = animation_player_path
+	
+	# Setup container variable in order to collect the starting node.
+	var start_node = false
+	
+	# Loop through the given data and setup the animation tree.
+	for node in data.nodes:
+		# Setup the animation node.
+		var _AnimationNode = AnimationNodeBlendSpace2D.new()
+		_AnimationNode.auto_triangles = true
+		_AnimationNode.set_blend_mode(AnimationNodeBlendSpace2D.BLEND_MODE_DISCRETE)
+		_AnimationNode.max_space = Vector2(1, 1)
+		_AnimationNode.min_space = Vector2(-1, -1)
+		
+		# Check if this hould be the start node.
+		if node.has('start') and node.start:
+			start_node = node.name
+			
+		# Loop through the blend points and add them to the animation node.
+		for blend_point in node.blend_points:
+			var _AnimationNodeAnimation = AnimationNodeAnimation.new()
+			_AnimationNodeAnimation.animation = blend_point.animation
+			_AnimationNode.add_blend_point(_AnimationNodeAnimation, Vector2(blend_point.x, blend_point.y))
+			
+		# Add the animation node to the animation state machine.
+		_AnimationState.add_node(node.name, _AnimationNode, Vector2(0,0))
+
+	# Set the idle animation node to be the graph start.
+	if start_node:
+		_AnimationState.set_start_node(start_node)
+	
+	# Setup the transitions between the nodes.
+	for transition in data.transitions:
+		_AnimationState.add_transition(transition.from, transition.to, AnimationNodeStateMachineTransition.new())
+	
+	return _AnimationTree

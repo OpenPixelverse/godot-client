@@ -3,14 +3,31 @@ class_name EnemiesContainer2D
 
 
 ########################################################
+# Hooks                                                #
+########################################################
+
+
+func _receive_subject_data(name : String, data : Dictionary)->void:
+	receive_enemy_data(name, data)
+
+
+########################################################
 # Methods                                              #
 ########################################################
 
 
 # Spawn enemy as a child of this container.
-func spawn_enemy(data : Dictionary)->void:
-	var _Enemy = Enemy2D.new(data)
+func spawn_enemy(name : String)->void:
+	var _Enemy = Enemy2D.new(name)
+	_Enemy.name = name
 	add_child(_Enemy)
+
+
+# Receive the enemy data.
+func receive_enemy_data(name : String, data : Dictionary)->void:
+	if not has_node(name):
+		assert(false, "[EnemiesContainer2D] We could not find the enemy '" + name + "'.")
+	get_node(name).setup_subject(data)
 
 
 ########################################################
@@ -31,7 +48,7 @@ func interpolate_elements(interpolation_factor : float, world_state_buffer : Arr
 		#  current world state.
 		if not current_world_state.has(element):
 			continue
-			
+		
 		# Get the subject data from the world states.
 		var current_data = current_world_state[element]
 		var future_data = future_world_state[element]
@@ -46,9 +63,9 @@ func interpolate_elements(interpolation_factor : float, world_state_buffer : Arr
 			# Update position if present.
 			if current_data.has("position") and future_data.has("position"):
 				# Only update if the position has changed.
-				if current_data.position != future_data.position:
-					var new_position = lerp(current_data.position, future_data.position, interpolation_factor)
-					_Subject.set_position(new_position)
+				var new_position = lerp(current_data.position, future_data.position, interpolation_factor)
+				_Subject.set_position(new_position)
 		# Otherwise we want to spawn it.
 		else:
-			spawn_enemy(current_data)
+			print("spawn enemy ", element)
+			spawn_enemy(element)

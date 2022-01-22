@@ -34,6 +34,7 @@ func _ready()->void:
 func _on_connection_succeeded()->void:
 	# Load the client data from the server.
 	Router.load_world_data(Config.get_value("World", "world", "default"))
+	emit_signal("connection_succeeded")
 
 
 # Called when we failed to connect to the server
@@ -52,6 +53,11 @@ func _receive_world_state(world_state : Dictionary)->void:
 	#  initialized already.
 	if _World:
 		_World._receive_world_state(world_state)
+
+
+# Receive initial subject data.
+func _receive_subject_data(type : String, name : String, data : Dictionary)->void:
+	_World._receive_subject_data(type, name, data)
 
 
 ########################################################

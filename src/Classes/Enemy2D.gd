@@ -7,8 +7,8 @@ class_name Enemy2D
 ########################################################
 
 
-func _init(data: Dictionary).(data)->void:
-	pass
+func _init(name : String)->void:
+	Router.load_subject_data("enemy", name)
 
 
 ########################################################

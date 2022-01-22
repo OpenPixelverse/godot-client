@@ -14,14 +14,17 @@ var direction : Vector2
 
 var velocity : Vector2
 
+var _AnimationPlayer : AnimationPlayer
+var _AnimationTree : AnimationTree
+var _AnimationStatePlayback
 
 ########################################################
 # Hooks                                                #
 ########################################################
 
 
-func _init(data: Dictionary)->void:
-	setup_subject(data)
+# NOTE:
+#  _init() needs to be implemented by the inheriting class!
 
 
 ########################################################
@@ -35,8 +38,10 @@ func setup_subject(data: Dictionary)->void:
 	setup_states(data)
 	setup_scale_factor(data)
 	setup_direction(data)
+	setup_sprite(data)
 	setup_collision_shape(data)
-#	setup_player_detection_zone(data) # TODO: Try to setup the player detection zone through the seek_player state.
+	setup_animation(data)
+	setup_position(data)
 
 
 # Setup subject stats.
@@ -59,21 +64,7 @@ func setup_states(data: Dictionary)->void:
 # Setup scale factor.
 func setup_scale_factor(data: Dictionary)->void:
 	if data.has("scale_factor"):
-		var scale_factor_type = typeof(data.scale_factor)
-		assert([TYPE_REAL, TYPE_INT, TYPE_DICTIONARY].has(scale_factor_type), "[Subject2D] No valid scale factor provided.")
-		var scale_factor = data.scale_factor
-		if typeof(scale_factor) == TYPE_DICTIONARY:
-			assert(scale_factor.has("type"), "[Subject2D] No type for scale factor dictionary provided.")
-			match scale_factor.type:
-				"random":
-					assert(scale_factor.has("options"), "[Subject2D] No options provided for scale factor of type 'random'.")
-					assert(scale_factor.options.has("min"), "[Subject2D] No min value provided in options of scale factor of type 'random'.")
-					assert(scale_factor.options.has("max"), "[Subject2D] No max value provided in options of scale factor of type 'random'.")
-					scale_factor = Helper.randf_range(scale_factor.options.min, scale_factor.options.max)
-				_:
-					assert(false, "[Subject2D] No valid type for scale factor dictionary provided.")
-			
-		set_scale(Vector2(scale_factor, scale_factor)) # TODO: see if we can get rid of the scale_factor by using the Node2D.scale.
+		set_scale(data.scale_factor)
 
 
 # Setup the direction the player is looking to.
@@ -86,3 +77,49 @@ func setup_direction(data: Dictionary)->void:
 func setup_collision_shape(data: Dictionary)->void:
 	if data.has("collision_shape"):
 		Builder2D.add_collision_shape(self, data.collision_shape)
+
+
+# Setup sprite.
+func setup_sprite(data: Dictionary):
+	# Check if we have data for the sprite.
+	if data.has("sprite"):
+		# Add sprite for animation to the subject.
+		Builder2D.add_sprite(self, data.sprite)
+
+
+# Setup the positon of the subject.
+func setup_position(data : Dictionary)->void:
+	if data.has("position"):
+		position = data.position
+
+
+# Setup animation of this subject.
+func setup_animation(data: Dictionary):
+	# Setup the animation player.
+	setup_animation_player(data)
+	# Setup the animation tree.
+	setup_animation_tree(data)
+
+# Setup the animation player of this subject.
+func setup_animation_player(data: Dictionary):
+	# Check if we received data for the animations.
+	if data.animations:
+		# Create AnimationPlayer node instance.
+		_AnimationPlayer = Builder2D.build_animation_player(data.animations)
+		
+		# Add AnimationPlayer as child of the subject to the tree.
+		add_child(_AnimationPlayer)
+
+
+# Setup the animation tree.
+func setup_animation_tree(data: Dictionary):
+	# Check if we actually got animation tree data.
+	if data.has("animation_tree"):
+		# Create animation tree
+		_AnimationTree = Builder2D.build_animation_tree(data.animation_tree, _AnimationPlayer.get_path())
+		
+		# Setup the animation state playback instance
+		_AnimationStatePlayback = _AnimationTree.get("parameters/playback")
+		
+		# Add the animation tree to the nodes tree as child of this node.
+		add_child(_AnimationTree)

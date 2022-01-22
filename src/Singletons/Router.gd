@@ -94,3 +94,18 @@ remote func receive_world_data(world_data : Dictionary)->void:
 remote func receive_world_state(world_state : Dictionary)->void:
 	security_check()
 	_Client._receive_world_state(world_state)
+
+
+########################################################
+# Subjects
+
+
+# Load initial subject data.
+func load_subject_data(type : String, name : String)->void:
+	rpc_id(1, "load_subject_data", type, name)
+
+
+# Receive requested initial subject data.
+remote func receive_subject_data(type : String, name : String, data : Dictionary)->void:
+	security_check()
+	_Client._receive_subject_data(type, name, data)
