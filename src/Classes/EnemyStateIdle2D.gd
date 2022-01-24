@@ -7,9 +7,6 @@ class_name EnemyStateIdle2D
 ########################################################
 
 
-var _ActionTimer : Timer
-
-
 ########################################################
 # Hooks                                                #
 ########################################################
@@ -29,13 +26,4 @@ func _on_action_timer_timeout():
 
 
 func enter():
-	_ActionTimer = Timer.new()
-	_ActionTimer.name = "ActionTimer"
-	_ActionTimer.wait_time = rand_range(1, 3)
-	_ActionTimer.autostart = true
-	_ActionTimer.connect("timeout", self, "_on_action_timer_timeout")
-	add_child(_ActionTimer)
-
-
-func exit():
-	_ActionTimer.queue_free()
+	emit_signal("change_animation", "idle")

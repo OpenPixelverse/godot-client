@@ -24,6 +24,7 @@ var _CurrentState : State2D
 
 
 signal state_changed(new_state)
+signal change_animation(new_animation)
 
 
 ########################################################
@@ -57,6 +58,11 @@ func _physics_process(delta)->void:
 		_CurrentState.update(delta)
 
 
+# Called whenever the animation should be changed.
+func _on_change_animation(new_animation : String)->void:
+	emit_signal("change_animation", new_animation)
+
+
 ########################################################
 # Setup                                                #
 ########################################################
@@ -86,6 +92,7 @@ func setup_state(state: String)->void:
 	
 	state_map[state] = _State
 	add_child(_State)
+	_State.connect("change_animation", self, "_on_change_animation")
 	_State.connect("finished", self, "_on_change_state")
 
 
@@ -137,5 +144,5 @@ func change_state(new_state: String)->void:
 
 # Validate in incoming state against the state map.
 func validate_new_state(new_state: String)->void:
-	if !state_map.has(new_state):
+	if !new_state or !state_map.has(new_state):
 		assert(false, "[StateMachine2D] The given new state '" + new_state + "' is not available.")

@@ -7,6 +7,7 @@ class_name Subject2D
 ########################################################
 
 var _States : StateMachine2D
+var current_state : String
 
 var stats : SubjectStats2D
 
@@ -16,7 +17,9 @@ var velocity : Vector2
 
 var _AnimationPlayer : AnimationPlayer
 var _AnimationTree : AnimationTree
-var _AnimationStatePlayback
+var _AnimationStatePlayback : AnimationNodeStateMachinePlayback
+
+var animation_tree_nodes : Array
 
 ########################################################
 # Hooks                                                #
@@ -25,6 +28,18 @@ var _AnimationStatePlayback
 
 # NOTE:
 #  _init() needs to be implemented by the inheriting class!
+
+
+func _change_state(new_state : String)->void:
+	change_state(new_state)
+
+
+func _change_direction(new_direction : Vector2)->void:
+	change_direction(new_direction)
+
+
+func _on_change_animation(new_animation : String)->void:
+	change_animation(new_animation)
 
 
 ########################################################
@@ -59,6 +74,7 @@ func setup_states(data: Dictionary)->void:
 		_States = StateMachine2D.new(self, data.states, start_state)
 		_States.name = "States"
 		add_child(_States)
+		_States.connect("change_animation", self, "_on_change_animation")
 
 
 # Setup scale factor.
@@ -121,5 +137,29 @@ func setup_animation_tree(data: Dictionary):
 		# Setup the animation state playback instance
 		_AnimationStatePlayback = _AnimationTree.get("parameters/playback")
 		
+		# Save the animation nodes for later.
+		for animation_node in data.animation_tree.nodes:
+			animation_tree_nodes.push_back(animation_node.name)
+		
 		# Add the animation tree to the nodes tree as child of this node.
 		add_child(_AnimationTree)
+
+
+########################################################
+# Methods                                              #
+########################################################
+
+
+func change_state(new_state : String)->void:
+	if _States and current_state != new_state:
+		_States.change_state(new_state)
+
+
+func change_animation(new_animation : String)->void:
+	_AnimationStatePlayback.travel(new_animation)
+
+
+func change_direction(new_direction : Vector2)->void:
+	if _AnimationTree:
+		for animation_node in animation_tree_nodes:
+			_AnimationTree.set("parameters/" + animation_node + "/blend_position", new_direction)

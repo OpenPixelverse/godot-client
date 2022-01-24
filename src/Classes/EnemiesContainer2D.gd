@@ -59,7 +59,10 @@ func interpolate_elements(interpolation_factor : float, world_state_buffer : Arr
 			var _Subject = get_node(element)
 			# Update the subject state if present.
 			if future_data.has("state"):
-				_Subject.state = future_data.state
+				_Subject._change_state(future_data.state)
+			# Update the direction if present.
+			if future_data.has("direction"):
+				_Subject._change_direction(future_data.direction)
 			# Update position if present.
 			if current_data.has("position") and future_data.has("position"):
 				# Only update if the position has changed.
@@ -67,5 +70,4 @@ func interpolate_elements(interpolation_factor : float, world_state_buffer : Arr
 				_Subject.set_position(new_position)
 		# Otherwise we want to spawn it.
 		else:
-			print("spawn enemy ", element)
 			spawn_enemy(element)

@@ -51,8 +51,6 @@ func receive_subject_data(type : String, name : String, data : Dictionary)->void
 
 func interpolate_elements(interpolation_factor : float, world_state_buffer : Array)->void:
 	for element in world_state_buffer[2]["subjects"]:
-#		print("interpolate_elements")
-#		print(world_state_buffer[2]["subjects"])
 		match element:
 			"enemies":
 				_EnemiesContainer.interpolate_elements(interpolation_factor, world_state_buffer)
