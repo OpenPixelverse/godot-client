@@ -159,7 +159,12 @@ func change_animation(new_animation : String)->void:
 	_AnimationStatePlayback.travel(new_animation)
 
 
+# Called whenever we need to update the direction of the subject.
 func change_direction(new_direction : Vector2)->void:
+	# Set the direction on the subject.
+	direction = new_direction
+	# Only releveant if the subject has an AnimationTree assigned.
 	if _AnimationTree:
+		# Loop over the animation_tree_nodes and set the direction on all of them.
 		for animation_node in animation_tree_nodes:
 			_AnimationTree.set("parameters/" + animation_node + "/blend_position", new_direction)
