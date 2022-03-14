@@ -57,6 +57,7 @@ func _receive_world_state(world_state : Dictionary)->void:
 
 # Receive initial subject data.
 func _receive_subject_data(type : String, name : String, data : Dictionary)->void:
+	print("_receive_subject_data ", type, " ", name)
 	_World._receive_subject_data(type, name, data)
 
 
