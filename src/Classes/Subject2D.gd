@@ -80,7 +80,10 @@ func setup_states(data: Dictionary)->void:
 # Setup scale factor.
 func setup_scale_factor(data: Dictionary)->void:
 	if data.has("scale_factor"):
-		set_scale(data.scale_factor)
+		if typeof(data.scale_factor) == TYPE_INT:
+			set_scale(Vector2(data.scale_factor, data.scale_factor))
+		else:
+			set_scale(data.scale_factor)
 
 
 # Setup the direction the player is looking to.
@@ -119,7 +122,7 @@ func setup_animation(data: Dictionary):
 # Setup the animation player of this subject.
 func setup_animation_player(data: Dictionary):
 	# Check if we received data for the animations.
-	if data.animations:
+	if data.has("animations"):
 		# Create AnimationPlayer node instance.
 		_AnimationPlayer = Builder2D.build_animation_player(data.animations)
 		
